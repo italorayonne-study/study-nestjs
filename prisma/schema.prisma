@@ -1,8 +1,27 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "sqlserver"
   url      = env("DATABASE_URL")
+  schemas  = ["evento_externo"]
+}
+
+model TB_EVENTO_EXTERNO {
+  CO_SEQ_EVENTO             Int     @id(map: "PK__TB_EVENT__731DC8A11BD6E048") @default(autoincrement())
+  NO_EVENTO                 String  @db.VarChar(255)
+  DS_EMAIL                  String  @db.VarChar(50)
+  DS_EVENTO                 String? @db.VarChar(500)
+  DS_WEBSITE                String? @db.VarChar(50)
+  CO_RA                     Int
+  NU_PUBLICO_MAXIMO         Int
+  NU_IDADE_MINIMA           Int
+  NU_QUANTIDADE_INGRESSO    Int?
+  JS_NATUREZA_EVENTO        String? @db.VarChar(Max)
+  JS_CARACTERISTICAS_LOCAL  String? @db.VarChar(Max)
+  DS_INFORMACOES_ADICIONAIS String? @db.VarChar(500)
+
+  @@schema("evento_externo")
 }
