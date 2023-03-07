@@ -10,7 +10,7 @@ datasource db {
 }
 
 model TB_EVENTO_EXTERNO {
-  CO_SEQ_EVENTO             Int     @id(map: "PK__TB_EVENT__731DC8A11BD6E048") @default(autoincrement())
+  CO_SEQ_EVENTO             Int     @id(map: "PK__TB_EVENT__731DC8A19B232E82") @default(autoincrement())
   NO_EVENTO                 String  @db.VarChar(255)
   DS_EMAIL                  String  @db.VarChar(50)
   DS_EVENTO                 String? @db.VarChar(500)

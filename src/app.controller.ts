@@ -1,4 +1,3 @@
-import { Query } from '@nestjs/common';
 import {
   Body,
   Controller,
@@ -6,9 +5,9 @@ import {
   Get,
   Param,
   Post,
+  Query,
 } from '@nestjs/common/decorators';
 import { TB_EVENTO_EXTERNO } from '@prisma/client';
-import { equal } from 'assert';
 import { PrismaService } from './Database/prisma.service';
 
 @Controller('api')
@@ -42,8 +41,9 @@ export class AppController {
         NU_PUBLICO_MAXIMO: command.NU_PUBLICO_MAXIMO,
         DS_EVENTO: command.DS_EVENTO,
         DS_INFORMACOES_ADICIONAIS: command.DS_INFORMACOES_ADICIONAIS,
-        JS_CARACTERISTICAS_LOCAL:
-          JSON.stringify(command.JS_CARACTERISTICAS_LOCAL) + ',',
+        JS_CARACTERISTICAS_LOCAL: JSON.stringify(
+          command.JS_CARACTERISTICAS_LOCAL,
+        ),
         JS_NATUREZA_EVENTO: command.JS_NATUREZA_EVENTO,
         NU_QUANTIDADE_INGRESSO: command.NU_QUANTIDADE_INGRESSO,
         DS_WEBSITE: command.DS_WEBSITE,
@@ -53,15 +53,13 @@ export class AppController {
     return evento;
   }
 
-  @Get('/test/')
-  async getByQuery() {
-    const evento = await this.prisma.tB_EVENTO_EXTERNO.findMany({
-      where: {
-        JS_CARACTERISTICAS_LOCAL: {
-          contains: '"privada":true',
-        },
-      },
-    });
+  @Get('/test')
+  async getByQuery(@Query('query') query: string) {
+    const jsonQuery = `$.caracteristicasLocal.${query}`;
+
+    const evento = await this.prisma
+      .$queryRaw`SELECT * FROM EVENTO.evento_externo.TB_EVENTO_EXTERNO
+                 WHERE JSON_VALUE(JS_CARACTERISTICAS_LOCAL, ${jsonQuery}) = 'true'`;
 
     return evento;
   }
@@ -73,5 +71,15 @@ export class AppController {
     });
 
     return evento;
+  }
+
+  private isJsonString(jsonString: string) {
+    try {
+      JSON.parse(jsonString);
+    } catch (e) {
+      return false;
+    }
+
+    return true;
   }
 }
